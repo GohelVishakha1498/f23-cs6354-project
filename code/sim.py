@@ -54,8 +54,8 @@ if __name__ == "__main__":
 
         for t in range(trace_elements):
 
-            if t % 1000 == 0:
-                print("Processing the program trace, progress so far =", int(t / trace_elements * 100), "%")
+            #if t % 1000 == 0:
+            #    print("Processing the program trace, progress so far =", int(t / trace_elements * 100), "%")
 
             compute += int(trace[t].split(" ")[0])
             address = int(trace[t].split(" ")[1])
@@ -64,11 +64,11 @@ if __name__ == "__main__":
             if found == False:
                 cache.load(address)
 
-            print("set and tag of", hex(address), "is", cache.find_set(address), cache.find_tag(address))
-            if found:
-                print("address", hex(address), "CACHE HIT. Good Job.")
-            else:
-                print("address", hex(address), "CACHE MISS. Loading from memory.")
+            #print("set and tag of", hex(address), "is", cache.find_set(address), cache.find_tag(address))
+            #if found:
+            #    print("address", hex(address), "CACHE HIT. Good Job.")
+            #else:
+            #    print("address", hex(address), "CACHE MISS. Loading from memory.")
         
         load_requests = trace_elements
         misses = load_requests - cache.hit
