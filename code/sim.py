@@ -1,5 +1,6 @@
 import sys
 import os
+import gzip
 
 from cache_lfu import Cache as CacheLFU
 from cache_random import Cache as CacheRandom
@@ -14,6 +15,7 @@ if __name__ == "__main__":
         cacheSize = int(sys.argv[2])
         ways = int(sys.argv[3])
         block_size = int(sys.argv[4])
+        trace_elements=1000
 
     except Exception as e:
         print("Please provide all the required parameters: 1 - Cache Type, 2 - Cache Size, 3 - Ways, 4 - Block Size", "\nError:", e)
@@ -38,13 +40,22 @@ if __name__ == "__main__":
         cache.reset()
         compute = 0
 
-        with open(f"./traces/{file}") as f:
-            trace = f.readlines()
+        if format(file).split('.')[-1] == "gz":
+            with gzip.open('./traces/{}'.format(file),'rt') as f:
+                trace = f.readlines()
+                if (trace_elements > len(trace)):
+                    trace_elements = len(trace)
+        else:
+            with open('../traces/{}'.format(file)) as f:
+                trace = f.readlines()
+                if (trace_elements > len(trace)):
+                    trace_elements = len(trace)
 
-        for t in range(len(trace)):
+
+        for t in range(trace_elements):
 
             if t % 1000 == 0:
-                print("Processing the program trace, progress so far =", int(t / len(trace) * 100), "%")
+                print("Processing the program trace, progress so far =", int(t / trace_elements * 100), "%")
 
             compute += int(trace[t].split(" ")[0])
             address = int(trace[t].split(" ")[1])
@@ -59,7 +70,7 @@ if __name__ == "__main__":
             else:
                 print("address", hex(address), "CACHE MISS. Loading from memory.")
         
-        load_requests = len(trace)
+        load_requests = trace_elements
         misses = load_requests - cache.hit
         miss_rate = misses / load_requests
         hit_rate = 1 - miss_rate
@@ -67,5 +78,5 @@ if __name__ == "__main__":
         print("total cache misses", misses)
         print("miss_rate", miss_rate)
         print("hit_rate", 1 - miss_rate)
-        print("Finished processing your program trace, progress =", ((t+1) / len(trace)) * 100, "%")
+        print("Finished processing your program trace, progress =", ((t+1) / trace_elements) * 100, "%")
 
